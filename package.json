@@ -2,7 +2,8 @@
   "name": "pop-dark",
   "module": "index.ts",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/plist": "^3.0.5"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -13,5 +14,8 @@
     "generate:opencode": "bun run scripts/generate-opencode.ts",
     "generate": "bun run generate:bat && bun run generate:opencode"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "plist": "^3.1.0"
+  }
 }

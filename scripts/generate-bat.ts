@@ -1,21 +1,10 @@
+import plist from "plist";
+
 import { BG, FG, type HelixTheme, type HelixValue, normalizeHelixValue, run } from "./lib/helix";
 import { MODIFIER_MAP, THEME_MAP } from "./lib/bat";
 
-interface TMThemeStyle {
-  foreground?: string;
-  background?: string;
-  fontStyle?: string;
-}
-
-interface TMThemeRule {
-  name: string;
-  scope: string;
-  style: TMThemeStyle;
-}
-
-interface GlobalSettings {
-  background?: string;
-  foreground?: string;
+function compact<T extends object>(obj: T): Partial<T> {
+  return Object.fromEntries(Object.entries(obj).filter(([, v]) => v)) as Partial<T>;
 }
 
 function resolveColor(
@@ -33,116 +22,33 @@ function extractStyle(
   scopes: Record<string, HelixValue>,
   scope: string,
   palette: Record<string, string>
-): TMThemeStyle {
+) {
   const value = normalizeHelixValue(scopes[scope]);
   const fontStyle = value.modifiers?.map((m) => MODIFIER_MAP[m]).filter(Boolean).join(" ");
-  return {
+  return compact({
     foreground: resolveColor(value[FG], palette),
     background: resolveColor(value[BG], palette),
     fontStyle,
-  };
-}
-
-function escapeXml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
-
-function generateTmTheme(
-  globalSettings: GlobalSettings,
-  tmThemeRules: TMThemeRule[]
-): string {
-  const lines: string[] = [];
-
-  lines.push('<?xml version="1.0" encoding="UTF-8"?>');
-  lines.push(
-    '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
-  );
-  lines.push('<plist version="1.0">');
-  lines.push("<dict>");
-
-  lines.push("\t<key>author</key>");
-  lines.push("\t<string>Pop Dark Theme</string>");
-
-  lines.push("\t<key>name</key>");
-  lines.push("\t<string>Pop Dark</string>");
-
-  lines.push("\t<key>colorSpaceName</key>");
-  lines.push("\t<string>sRGB</string>");
-
-  lines.push("\t<key>semanticClass</key>");
-  lines.push("\t<string>theme.dark.pop-dark</string>");
-
-  lines.push("\t<key>settings</key>");
-  lines.push("\t<array>");
-
-  lines.push("\t\t<dict>");
-  lines.push("\t\t\t<key>settings</key>");
-  lines.push("\t\t\t<dict>");
-
-  if (globalSettings.background) {
-    lines.push("\t\t\t\t<key>background</key>");
-    lines.push(`\t\t\t\t<string>${globalSettings.background}</string>`);
-  }
-  if (globalSettings.foreground) {
-    lines.push("\t\t\t\t<key>foreground</key>");
-    lines.push(`\t\t\t\t<string>${globalSettings.foreground}</string>`);
-  }
-
-  lines.push("\t\t\t</dict>");
-  lines.push("\t\t</dict>");
-
-  for (const rule of tmThemeRules) {
-    lines.push("\t\t<dict>");
-
-    lines.push("\t\t\t<key>name</key>");
-    lines.push(`\t\t\t<string>${escapeXml(rule.name)}</string>`);
-
-    lines.push("\t\t\t<key>scope</key>");
-    lines.push(`\t\t\t<string>${escapeXml(rule.scope)}</string>`);
-
-    lines.push("\t\t\t<key>settings</key>");
-    lines.push("\t\t\t<dict>");
-
-    if (rule.style.foreground) {
-      lines.push("\t\t\t\t<key>foreground</key>");
-      lines.push(`\t\t\t\t<string>${rule.style.foreground}</string>`);
-    }
-
-    if (rule.style.background) {
-      lines.push("\t\t\t\t<key>background</key>");
-      lines.push(`\t\t\t\t<string>${rule.style.background}</string>`);
-    }
-
-    if (rule.style.fontStyle) {
-      lines.push("\t\t\t\t<key>fontStyle</key>");
-      lines.push(`\t\t\t\t<string>${rule.style.fontStyle}</string>`);
-    }
-
-    lines.push("\t\t\t</dict>");
-    lines.push("\t\t</dict>");
-  }
-
-  lines.push("\t</array>");
-  lines.push("</dict>");
-  lines.push("</plist>");
-
-  return lines.join("\n");
+  });
 }
 
 run("themes/bat.tmTheme", ({ scopes, palette }: HelixTheme) => {
-  const globalSettings = {
+  const globalSettings = { settings: {
     background: extractStyle(scopes, "ui.background", palette).background,
     foreground: extractStyle(scopes, "ui.text", palette).foreground,
-  };
+  } };
 
-  const tmThemeRules = THEME_MAP.map(({ tmTheme: scope, helix, name }) => {
-    return { name, scope, style: extractStyle(scopes, helix, palette) };
+  const rules = THEME_MAP.map(({ tmTheme: scope, helix, name }) => {
+    return { name, scope, settings: extractStyle(scopes, helix, palette) };
   });
 
-  return generateTmTheme(globalSettings, tmThemeRules);
+  const theme = {
+    author: "Pop Dark Theme",
+    name: "Pop Dark",
+    colorSpaceName: "sRGB",
+    semanticClass: "theme.dark.pop-dark",
+    settings: [globalSettings, ...rules],
+  } as plist.PlistValue;
+
+  return plist.build(theme);
 });
