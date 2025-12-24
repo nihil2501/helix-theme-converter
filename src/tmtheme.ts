@@ -122,7 +122,7 @@ function extractStyle(
   });
 }
 
-export function generate({ scopes, palette }: HelixTheme): string {
+export function generate(name: string, { scopes, palette }: HelixTheme): string {
   const plist = require("plist");
 
   const globalSettings = {
@@ -137,10 +137,10 @@ export function generate({ scopes, palette }: HelixTheme): string {
   });
 
   const theme = {
-    author: "Pop Dark Theme",
-    name: "Pop Dark",
+    author: "helix-theme-converter",
+    name,
     colorSpaceName: "sRGB",
-    semanticClass: "theme.dark.pop-dark",
+    semanticClass: `theme.${name}`,
     settings: [globalSettings, ...rules],
   };
 

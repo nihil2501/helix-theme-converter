@@ -22,7 +22,7 @@ const opencodePath = `${dir}/opencode.json`;
 const theme = await loadHelixTheme(inputPath);
 
 await Promise.all([
-  Bun.write(tmThemePath, generateTmTheme(theme)),
+  Bun.write(tmThemePath, generateTmTheme(name, theme)),
   Bun.write(opencodePath, generateOpenCode(theme)),
 ]);
 

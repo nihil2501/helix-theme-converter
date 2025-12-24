@@ -3,13 +3,13 @@
 <plist version="1.0">
   <dict>
     <key>author</key>
-    <string>Pop Dark Theme</string>
+    <string>helix-theme-converter</string>
     <key>name</key>
-    <string>Pop Dark</string>
+    <string>pop-dark</string>
     <key>colorSpaceName</key>
     <string>sRGB</string>
     <key>semanticClass</key>
-    <string>theme.dark.pop-dark</string>
+    <string>theme.pop-dark</string>
     <key>settings</key>
     <array>
       <dict>
