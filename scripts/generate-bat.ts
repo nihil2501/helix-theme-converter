@@ -6,7 +6,7 @@
  * Usage: bun run scripts/generate-bat.ts
  */
 
-import { type HelixTheme, type HelixValue, parseHelixTheme } from "./lib/helix";
+import { type HelixValue, parseHelixTheme } from "./lib/helix";
 
 interface TokenRule {
   name: string;
@@ -22,101 +22,110 @@ interface GlobalSettings {
 }
 
 // -----------------------------------------------------------------------------
-// Scope Mapping: Helix -> tmTheme
+// Scope Mapping: tmTheme -> Helix
 // -----------------------------------------------------------------------------
 
-// Helix scope -> { tmTheme scope, human-readable name }
-const SCOPE_MAP: Record<string, { scope: string; name: string }> = {
+let SCOPE_MAP = [
   // Comments
-  "comment": { scope: "comment", name: "Comments" },
-  "comment.line": { scope: "comment.line", name: "Line Comments" },
-  "comment.block": { scope: "comment.block", name: "Block Comments" },
-  "comment.block.documentation": { scope: "comment.block.documentation", name: "Documentation Comments" },
-
-  // Strings
-  "string": { scope: "string", name: "Strings" },
-  "string.regexp": { scope: "string.regexp", name: "Regular Expressions" },
-  "string.special": { scope: "string.other", name: "Special Strings" },
-  "string.special.symbol": { scope: "constant.other.symbol", name: "Symbols" },
-  "string.special.url": { scope: "string.other.link", name: "URLs" },
+  { tmTheme: "comment", helix: "comment", name: "Comments" },
+  { tmTheme: "comment.block", helix: "comment.block", name: "Block Comments" },
+  { tmTheme: "comment.block.documentation", helix: "comment.block.documentation", name: "Documentation Comments" },
+  { tmTheme: "comment.line", helix: "comment.line", name: "Line Comments" },
 
   // Constants
-  "constant": { scope: "constant", name: "Constants" },
-  "constant.numeric": { scope: "constant.numeric", name: "Numbers" },
-  "constant.character": { scope: "constant.character", name: "Characters" },
-  "constant.character.escape": { scope: "constant.character.escape", name: "Escape Characters" },
-  "constant.builtin": { scope: "constant.language", name: "Built-in Constants" },
+  { tmTheme: "constant", helix: "constant", name: "Constants" },
+  { tmTheme: "constant.character", helix: "constant.character", name: "Characters" },
+  { tmTheme: "constant.character.escape", helix: "constant.character.escape", name: "Escape Characters" },
+  { tmTheme: "constant.language", helix: "constant.builtin", name: "Built-in Constants" },
+  { tmTheme: "constant.numeric", helix: "constant.numeric", name: "Numbers" },
+  { tmTheme: "constant.other.symbol", helix: "string.special.symbol", name: "Symbols" },
 
-  // Variables
-  "variable": { scope: "variable", name: "Variables" },
-  "variable.parameter": { scope: "variable.parameter", name: "Parameters" },
-  "variable.builtin": { scope: "variable.language", name: "Built-in Variables" },
-  "variable.other.member": { scope: "variable.other.member", name: "Member Variables" },
-  "variable.function": { scope: "variable.function", name: "Function References" },
+  // Entities
+  { tmTheme: "entity.name.function", helix: "function", name: "Functions" },
+  { tmTheme: "entity.name.function.constructor", helix: "constructor", name: "Constructors" },
+  { tmTheme: "entity.name.function.macro", helix: "function.macro", name: "Macros" },
+  { tmTheme: "entity.name.function.method", helix: "function.method", name: "Methods" },
+  { tmTheme: "entity.name.label", helix: "label", name: "Labels" },
+  { tmTheme: "entity.name.module", helix: "module", name: "Modules" },
+  { tmTheme: "entity.name.namespace", helix: "namespace", name: "Namespaces" },
+  { tmTheme: "entity.name.tag", helix: "tag", name: "Tags" },
+  { tmTheme: "entity.name.type", helix: "type", name: "Types" },
+  { tmTheme: "entity.name.type.enum", helix: "type.enum.variant", name: "Enum Variants" },
+  { tmTheme: "entity.other.attribute-name", helix: "attribute", name: "Attributes" },
 
   // Keywords
-  "keyword": { scope: "keyword", name: "Keywords" },
-  "keyword.control": { scope: "keyword.control", name: "Control Keywords" },
-  "keyword.control.repeat": { scope: "keyword.control.loop", name: "Loop Keywords" },
-  "keyword.control.import": { scope: "keyword.control.import", name: "Import Keywords" },
-  "keyword.control.return": { scope: "keyword.control.return", name: "Return Keywords" },
-  "keyword.control.exception": { scope: "keyword.control.exception", name: "Exception Keywords" },
-  "keyword.operator": { scope: "keyword.operator", name: "Operator Keywords" },
-  "keyword.function": { scope: "storage.type.function", name: "Function Keywords" },
-  "keyword.directive": { scope: "keyword.other.directive", name: "Directives" },
-
-  // Operators & Punctuation
-  "operator": { scope: "operator", name: "Operators" },
-  "punctuation": { scope: "punctuation", name: "Punctuation" },
-  "punctuation.delimiter": { scope: "punctuation.separator", name: "Separators" },
-  "punctuation.bracket": { scope: "punctuation.bracket", name: "Brackets" },
-  "special": { scope: "keyword.other", name: "Special Keywords" },
-
-  // Functions
-  "function": { scope: "entity.name.function", name: "Functions" },
-  "function.method": { scope: "entity.name.function.method", name: "Methods" },
-  "function.macro": { scope: "entity.name.function.macro", name: "Macros" },
-  "function.builtin": { scope: "support.function", name: "Built-in Functions" },
-  "constructor": { scope: "entity.name.function.constructor", name: "Constructors" },
-
-  // Types
-  "type": { scope: "entity.name.type", name: "Types" },
-  "type.builtin": { scope: "support.type", name: "Built-in Types" },
-  "type.enum.variant": { scope: "entity.name.type.enum", name: "Enum Variants" },
-
-  // Tags/Attributes/Namespaces
-  "tag": { scope: "entity.name.tag", name: "Tags" },
-  "attribute": { scope: "entity.other.attribute-name", name: "Attributes" },
-  "namespace": { scope: "entity.name.namespace", name: "Namespaces" },
-  "module": { scope: "entity.name.module", name: "Modules" },
-  "label": { scope: "entity.name.label", name: "Labels" },
+  { tmTheme: "keyword", helix: "keyword", name: "Keywords" },
+  { tmTheme: "keyword.control", helix: "keyword.control", name: "Control Keywords" },
+  { tmTheme: "keyword.control.exception", helix: "keyword.control.exception", name: "Exception Keywords" },
+  { tmTheme: "keyword.control.import", helix: "keyword.control.import", name: "Import Keywords" },
+  { tmTheme: "keyword.control.loop", helix: "keyword.control.repeat", name: "Loop Keywords" },
+  { tmTheme: "keyword.control.return", helix: "keyword.control.return", name: "Return Keywords" },
+  { tmTheme: "keyword.operator", helix: "keyword.operator", name: "Operator Keywords" },
+  { tmTheme: "keyword.other", helix: "special", name: "Special Keywords" },
+  { tmTheme: "keyword.other.directive", helix: "keyword.directive", name: "Directives" },
 
   // Markup
-  "markup.heading": { scope: "markup.heading", name: "Headings" },
-  "markup.heading.1": { scope: "markup.heading.1", name: "Heading 1" },
-  "markup.heading.2": { scope: "markup.heading.2", name: "Heading 2" },
-  "markup.heading.3": { scope: "markup.heading.3", name: "Heading 3" },
-  "markup.heading.4": { scope: "markup.heading.4", name: "Heading 4" },
-  "markup.heading.5": { scope: "markup.heading.5", name: "Heading 5" },
-  "markup.heading.6": { scope: "markup.heading.6", name: "Heading 6" },
-  "markup.bold": { scope: "markup.bold", name: "Bold" },
-  "markup.italic": { scope: "markup.italic", name: "Italic" },
-  "markup.strikethrough": { scope: "markup.strikethrough", name: "Strikethrough" },
-  "markup.quote": { scope: "markup.quote", name: "Quotes" },
-  "markup.raw": { scope: "markup.raw", name: "Raw/Code" },
-  "markup.raw.inline": { scope: "markup.raw.inline", name: "Inline Code" },
-  "markup.raw.block": { scope: "markup.raw.block", name: "Code Blocks" },
-  "markup.list": { scope: "markup.list", name: "Lists" },
-  "markup.list.numbered": { scope: "markup.list.numbered", name: "Numbered Lists" },
-  "markup.list.unnumbered": { scope: "markup.list.unnumbered", name: "Bullet Lists" },
-  "markup.link": { scope: "markup.link", name: "Links" },
-  "markup.link.url": { scope: "markup.link.url", name: "Link URLs" },
+  { tmTheme: "markup.bold", helix: "markup.bold", name: "Bold" },
+  { tmTheme: "markup.changed", helix: "diff.delta", name: "Changed (Diff)" },
+  { tmTheme: "markup.deleted", helix: "diff.minus", name: "Deleted (Diff)" },
+  { tmTheme: "markup.heading", helix: "markup.heading", name: "Headings" },
+  { tmTheme: "markup.heading.1", helix: "markup.heading.1", name: "Heading 1" },
+  { tmTheme: "markup.heading.2", helix: "markup.heading.2", name: "Heading 2" },
+  { tmTheme: "markup.heading.3", helix: "markup.heading.3", name: "Heading 3" },
+  { tmTheme: "markup.heading.4", helix: "markup.heading.4", name: "Heading 4" },
+  { tmTheme: "markup.heading.5", helix: "markup.heading.5", name: "Heading 5" },
+  { tmTheme: "markup.heading.6", helix: "markup.heading.6", name: "Heading 6" },
+  { tmTheme: "markup.inserted", helix: "diff.plus", name: "Inserted (Diff)" },
+  { tmTheme: "markup.italic", helix: "markup.italic", name: "Italic" },
+  { tmTheme: "markup.link", helix: "markup.link", name: "Links" },
+  { tmTheme: "markup.link.url", helix: "markup.link.url", name: "Link URLs" },
+  { tmTheme: "markup.list", helix: "markup.list", name: "Lists" },
+  { tmTheme: "markup.list.numbered", helix: "markup.list.numbered", name: "Numbered Lists" },
+  { tmTheme: "markup.list.unnumbered", helix: "markup.list.unnumbered", name: "Bullet Lists" },
+  { tmTheme: "markup.quote", helix: "markup.quote", name: "Quotes" },
+  { tmTheme: "markup.raw", helix: "markup.raw", name: "Raw/Code" },
+  { tmTheme: "markup.raw.block", helix: "markup.raw.block", name: "Code Blocks" },
+  { tmTheme: "markup.raw.inline", helix: "markup.raw.inline", name: "Inline Code" },
+  { tmTheme: "markup.strikethrough", helix: "markup.strikethrough", name: "Strikethrough" },
 
-  // Diff
-  "diff.plus": { scope: "markup.inserted", name: "Inserted (Diff)" },
-  "diff.minus": { scope: "markup.deleted", name: "Deleted (Diff)" },
-  "diff.delta": { scope: "markup.changed", name: "Changed (Diff)" },
-};
+  // Operators & Punctuation
+  { tmTheme: "operator", helix: "operator", name: "Operators" },
+  { tmTheme: "punctuation", helix: "punctuation", name: "Punctuation" },
+  { tmTheme: "punctuation.bracket", helix: "punctuation.bracket", name: "Brackets" },
+  { tmTheme: "punctuation.separator", helix: "punctuation.delimiter", name: "Separators" },
+
+  // Storage
+  { tmTheme: "storage.type.function", helix: "keyword.function", name: "Function Keywords" },
+
+  // Strings
+  { tmTheme: "string", helix: "string", name: "Strings" },
+  { tmTheme: "string.other", helix: "string.special", name: "Special Strings" },
+  { tmTheme: "string.other.link", helix: "string.special.url", name: "URLs" },
+  { tmTheme: "string.regexp", helix: "string.regexp", name: "Regular Expressions" },
+
+  // Support
+  { tmTheme: "support.function", helix: "function.builtin", name: "Built-in Functions" },
+  { tmTheme: "support.type", helix: "type.builtin", name: "Built-in Types" },
+
+  // Variables
+  { tmTheme: "variable", helix: "variable", name: "Variables" },
+  { tmTheme: "variable.function", helix: "variable.function", name: "Function References" },
+  { tmTheme: "variable.language", helix: "variable.builtin", name: "Built-in Variables" },
+  { tmTheme: "variable.other.member", helix: "variable.other.member", name: "Member Variables" },
+  { tmTheme: "variable.parameter", helix: "variable.parameter", name: "Parameters" },
+];
+
+// Sort by tmTheme, then helix, then name for stable output
+SCOPE_MAP = SCOPE_MAP.sort((a, b) =>
+  a.tmTheme.localeCompare(b.tmTheme) ||
+  a.helix.localeCompare(b.helix) ||
+  a.name.localeCompare(b.name)
+);
+
+// Deduplicate by tmTheme (first occurrence wins)
+SCOPE_MAP = SCOPE_MAP.filter(
+  (item, index, arr) => arr.findIndex((x) => x.tmTheme === item.tmTheme) === index
+);
 
 // Helix modifier -> tmTheme fontStyle
 const MODIFIER_MAP: Record<string, string> = {
@@ -192,20 +201,20 @@ function extractStyle(
 // -----------------------------------------------------------------------------
 
 function extractGlobalSettings(
-  theme: HelixTheme,
+  scopes: Record<string, HelixValue>,
   palette: Record<string, string>
 ): GlobalSettings {
   const settings: GlobalSettings = {};
 
   // ui.background -> background
-  const uiBg = theme.scopes["ui.background"];
+  const uiBg = scopes["ui.background"];
   if (uiBg) {
     const style = extractStyle(uiBg, palette);
     if (style.bg) settings.background = style.bg;
   }
 
   // ui.text -> foreground
-  const uiText = theme.scopes["ui.text"];
+  const uiText = scopes["ui.text"];
   if (uiText) {
     const style = extractStyle(uiText, palette);
     if (style.fg) settings.foreground = style.fg;
@@ -219,33 +228,28 @@ function extractGlobalSettings(
 // -----------------------------------------------------------------------------
 
 function generateTokenRules(
-  theme: HelixTheme,
+  scopes: Record<string, HelixValue>,
   palette: Record<string, string>
 ): TokenRule[] {
   const rules: TokenRule[] = [];
-  const processedScopes = new Set<string>();
 
-  for (const [helixScope, { scope: tmScope, name }] of Object.entries(SCOPE_MAP)) {
-    if (processedScopes.has(tmScope)) continue;
-
-    const value = theme.scopes[helixScope];
+  for (const { tmTheme, helix, name } of SCOPE_MAP) {
+    const value = scopes[helix];
     if (!value) continue;
 
     const style = extractStyle(value, palette);
     if (!style.fg && !style.bg && !style.fontStyle) continue;
 
-    processedScopes.add(tmScope);
     rules.push({
       name,
-      scope: tmScope,
+      scope: tmTheme,
       foreground: style.fg,
       background: style.bg,
       fontStyle: style.fontStyle,
     });
   }
 
-  // Sort by scope for stable output
-  return rules.sort((a, b) => a.scope.localeCompare(b.scope));
+  return rules;
 }
 
 // -----------------------------------------------------------------------------
@@ -357,16 +361,15 @@ async function main() {
   const tomlContent = await Bun.file(inputPath).text();
 
   console.log("Parsing Helix theme...");
-  const theme = parseHelixTheme(tomlContent);
-  const palette = theme.palette;
+  const { scopes, palette } = parseHelixTheme(tomlContent);
 
   console.log(`Found ${Object.keys(palette).length} palette colors`);
 
   console.log("Extracting global settings...");
-  const globalSettings = extractGlobalSettings(theme, palette);
+  const globalSettings = extractGlobalSettings(scopes, palette);
 
   console.log("Generating token rules...");
-  const tokenRules = generateTokenRules(theme, palette);
+  const tokenRules = generateTokenRules(scopes, palette);
   console.log(`Generated ${tokenRules.length} token rules`);
 
   console.log("Building tmTheme XML...");
