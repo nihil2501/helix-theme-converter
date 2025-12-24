@@ -1,11 +1,11 @@
-import { FG, BG, type HelixProp } from "./helix";
+import { BG, FG, type HelixProp, type HelixTheme, type HelixValue, normalizeHelixValue } from "./helix";
 
 type ThemeMapping = {
   opencode: string;
   helix?: { scope: string; prop: HelixProp };
 };
 
-let THEME_MAP: ThemeMapping[] = [
+const THEME_MAP: ThemeMapping[] = [
   { opencode: "accent", helix: { scope: "ui.cursor", prop: BG } },
   { opencode: "error", helix: { scope: "error", prop: FG } },
   { opencode: "info", helix: { scope: "info", prop: FG } },
@@ -64,16 +64,33 @@ let THEME_MAP: ThemeMapping[] = [
   { opencode: "syntaxString", helix: { scope: "string", prop: FG } },
   { opencode: "syntaxType", helix: { scope: "type", prop: FG } },
   { opencode: "syntaxVariable", helix: { scope: "variable", prop: FG } },
-];
+]
+  .sort((a, b) =>
+    a.opencode.localeCompare(b.opencode) ||
+    (a.helix?.scope ?? "").localeCompare(b.helix?.scope ?? "") ||
+    (a.helix?.prop ?? "").localeCompare(b.helix?.prop ?? "")
+  )
+  .filter((item, index, arr) => arr.findIndex((i) => i.opencode === item.opencode) === index);
 
-THEME_MAP = THEME_MAP.sort((a, b) =>
-  a.opencode.localeCompare(b.opencode) ||
-  (a.helix?.scope ?? "").localeCompare(b.helix?.scope ?? "") ||
-  (a.helix?.prop ?? "").localeCompare(b.helix?.prop ?? "")
-);
+const NONE = "none" as const;
 
-THEME_MAP = THEME_MAP.filter(
-  (item, index, arr) => arr.findIndex((x) => x.opencode === item.opencode) === index
-);
+function resolveColor(
+  scopes: Record<string, HelixValue>,
+  helix?: { scope: string; prop: HelixProp }
+): string {
+  if (!helix) return NONE;
+  return normalizeHelixValue(scopes[helix.scope])[helix.prop] || NONE;
+}
 
-export { THEME_MAP };
+export function generate({ scopes, palette }: HelixTheme): string {
+  const defs = Object.fromEntries(
+    Object.entries(palette).sort(([a], [b]) => a.localeCompare(b))
+  );
+
+  const theme = Object.fromEntries(
+    THEME_MAP.map(({ opencode, helix }) => [opencode, resolveColor(scopes, helix)])
+  );
+
+  const json = { $schema: "https://opencode.ai/theme.json", defs, theme };
+  return `${JSON.stringify(json, null, 2)}\n`;
+}

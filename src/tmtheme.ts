@@ -1,4 +1,6 @@
-let THEME_MAP = [
+import { BG, FG, type HelixTheme, type HelixValue, normalizeHelixValue } from "./helix";
+
+const THEME_MAP = [
   { tmTheme: "comment", helix: "comment", name: "Comments" },
   { tmTheme: "comment.block", helix: "comment.block", name: "Block Comments" },
   { tmTheme: "comment.block.documentation", helix: "comment.block.documentation", name: "Documentation Comments" },
@@ -76,23 +78,71 @@ let THEME_MAP = [
   { tmTheme: "variable.language", helix: "variable.builtin", name: "Built-in Variables" },
   { tmTheme: "variable.other.member", helix: "variable.other.member", name: "Member Variables" },
   { tmTheme: "variable.parameter", helix: "variable.parameter", name: "Parameters" },
-];
+]
+  .sort((a, b) =>
+    a.tmTheme.localeCompare(b.tmTheme) ||
+    a.helix.localeCompare(b.helix) ||
+    a.name.localeCompare(b.name)
+  )
+  .filter((item, index, arr) => arr.findIndex((i) => i.tmTheme === item.tmTheme) === index);
 
-THEME_MAP = THEME_MAP.sort((a, b) =>
-  a.tmTheme.localeCompare(b.tmTheme) ||
-  a.helix.localeCompare(b.helix) ||
-  a.name.localeCompare(b.name)
-);
-
-THEME_MAP = THEME_MAP.filter(
-  (item, index, arr) => arr.findIndex((x) => x.tmTheme === item.tmTheme) === index
-);
-
-export { THEME_MAP };
-
-export const MODIFIER_MAP: Record<string, string> = {
+const MODIFIER_MAP: Record<string, string> = {
   bold: "bold",
   italic: "italic",
   underline: "underline",
   crossed_out: "strikethrough",
 };
+
+function compact<T extends object>(obj: T): Partial<T> {
+  return Object.fromEntries(Object.entries(obj).filter(([, v]) => v)) as Partial<T>;
+}
+
+function resolveColor(
+  value: string | undefined,
+  palette: Record<string, string>
+): string | undefined {
+  if (!value) return;
+  if (value.startsWith("#")) return value.toUpperCase();
+  if (palette[value]) return palette[value].toUpperCase();
+  console.warn(`Unknown color reference: ${value}`);
+  return undefined;
+}
+
+function extractStyle(
+  scopes: Record<string, HelixValue>,
+  scope: string,
+  palette: Record<string, string>
+) {
+  const value = normalizeHelixValue(scopes[scope]);
+  const fontStyle = value.modifiers?.map((m) => MODIFIER_MAP[m]).filter(Boolean).join(" ");
+  return compact({
+    foreground: resolveColor(value[FG], palette),
+    background: resolveColor(value[BG], palette),
+    fontStyle,
+  });
+}
+
+export function generate({ scopes, palette }: HelixTheme): string {
+  const plist = require("plist");
+
+  const globalSettings = {
+    settings: {
+      background: extractStyle(scopes, "ui.background", palette).background,
+      foreground: extractStyle(scopes, "ui.text", palette).foreground,
+    },
+  };
+
+  const rules = THEME_MAP.map(({ tmTheme: scope, helix, name }) => {
+    return { name, scope, settings: extractStyle(scopes, helix, palette) };
+  });
+
+  const theme = {
+    author: "Pop Dark Theme",
+    name: "Pop Dark",
+    colorSpaceName: "sRGB",
+    semanticClass: "theme.dark.pop-dark",
+    settings: [globalSettings, ...rules],
+  };
+
+  return plist.build(theme);
+}
