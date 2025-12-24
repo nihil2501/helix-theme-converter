@@ -1,17 +1,14 @@
-/**
- * Helix theme types and parsing utilities
- */
+export const FG = "fg" as const;
+export const BG = "bg" as const;
 
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
+export type HelixProp = typeof FG | typeof BG;
 
-export interface HelixStyle {
-  fg?: string;
-  bg?: string;
+type HelixColors = { [K in HelixProp]?: string };
+
+export type HelixStyle = HelixColors & {
   modifiers?: string[];
   underline?: { color?: string; style?: string };
-}
+};
 
 export type HelixValue = string | HelixStyle;
 
@@ -20,9 +17,10 @@ export interface HelixTheme {
   scopes: Record<string, HelixValue>;
 }
 
-// -----------------------------------------------------------------------------
-// Parsing
-// -----------------------------------------------------------------------------
+export function normalizeHelixValue(value: HelixValue | undefined): HelixStyle {
+  if (typeof value === "string") return { [FG]: value };
+  return value || {};
+}
 
 export function parseHelixTheme(tomlContent: string): HelixTheme {
   const parsed = Bun.TOML.parse(tomlContent) as any;

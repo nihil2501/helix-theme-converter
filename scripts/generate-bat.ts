@@ -1,4 +1,4 @@
-import { type HelixValue, parseHelixTheme } from "./lib/helix";
+import { FG, BG, type HelixValue, normalizeHelixValue, parseHelixTheme } from "./lib/helix";
 import { MODIFIER_MAP, THEME_MAP } from "./lib/bat";
 
 interface TMThemeStyle {
@@ -35,13 +35,12 @@ function extractStyle(
   scope: string,
   palette: Record<string, string>
 ): TMThemeStyle {
-  let value = scopes[scope] || {};
-  if (typeof value === "string") value = { fg: value };
+  const value = normalizeHelixValue(scopes[scope]);
   const fontStyle = value.modifiers?.map((m) => MODIFIER_MAP[m]).filter(Boolean).join(" ");
 
   return {
-    foreground: resolveColor(value.fg, palette),
-    background: resolveColor(value.bg, palette),
+    foreground: resolveColor(value[FG], palette),
+    background: resolveColor(value[BG], palette),
     fontStyle,
   };
 }
@@ -141,34 +140,21 @@ async function main() {
   const inputPath = "themes/helix.toml";
   const outputPath = "themes/bat.tmTheme";
 
-  console.log(`Reading ${inputPath}...`);
-  const tomlContent = await Bun.file(inputPath).text();
+  const { scopes, palette } = parseHelixTheme(
+    await Bun.file(inputPath).text()
+  );
 
-  console.log("Parsing Helix theme...");
-  const { scopes, palette } = parseHelixTheme(tomlContent);
-
-  console.log(`Found ${Object.keys(palette).length} palette colors`);
-
-  console.log("Extracting global settings...");
   const globalSettings = {
     background: extractStyle(scopes, "ui.background", palette).background,
     foreground: extractStyle(scopes, "ui.text", palette).foreground,
   };
 
-  console.log("Generating tmTheme rules...");
   const tmThemeRules = THEME_MAP.flatMap(({ tmTheme: scope, helix, name }) => {
     return { name, scope, style: extractStyle(scopes, helix, palette) };
   });
 
-  console.log(`Generated ${tmThemeRules.length} tmTheme rules`);
-
-  console.log("Building tmTheme XML...");
   const xml = generateTmTheme(globalSettings, tmThemeRules);
-
-  console.log(`Writing ${outputPath}...`);
   await Bun.write(outputPath, xml);
-
-  console.log("Done!");
 }
 
 main().catch(console.error);

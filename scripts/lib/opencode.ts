@@ -1,11 +1,8 @@
-const FG = "fg" as const;
-const BG = "bg" as const;
-
-type Prop = typeof FG | typeof BG;
+import { FG, BG, type HelixProp } from "./helix";
 
 type ThemeMapping = {
   opencode: string;
-  helix?: { scope: string; prop: Prop };
+  helix?: { scope: string; prop: HelixProp };
 };
 
 let THEME_MAP: ThemeMapping[] = [
@@ -79,5 +76,4 @@ THEME_MAP = THEME_MAP.filter(
   (item, index, arr) => arr.findIndex((x) => x.opencode === item.opencode) === index
 );
 
-export { FG, BG, THEME_MAP };
-export type { Prop };
+export { THEME_MAP };
