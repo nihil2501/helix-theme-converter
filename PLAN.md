@@ -23,29 +23,35 @@ The helix theme defines 31 named colors:
 
 See `themes/helix.toml` `[palette]` section for hex values.
 
-## Semantic Mappings
+## Mapping Documents
 
-Two documents define how helix theme concepts map to target formats:
+| Document | Purpose | Approach |
+|----------|---------|----------|
+| `docs/terminal.md` | ANSI-16 + terminal UI colors | Color assignments from palette |
+| `docs/syntax.md` | tmTheme syntax scopes | Semantic scope mapping |
 
-| Document | Purpose | Target Formats |
-|----------|---------|----------------|
-| `docs/terminal.md` | ANSI-16 + terminal UI colors | Ghostty, iTerm2, etc. |
-| `docs/syntax.md` | tmTheme syntax scopes | bat, opencode, Sublime, etc. |
+### Terminal (docs/terminal.md)
+
+Direct color assignments for terminal emulators. Maps UI colors from helix scopes (background, cursor, selection) and assigns ANSI-16 palette colors for visual consistency. No semantic derivation — colors chosen for aesthetic coherence and intensity pairing (bright = darker/more saturated).
+
+### Syntax (docs/syntax.md)
+
+Semantic scope mapping from helix tree-sitter scopes to tmTheme scopes. Used for syntax highlighting in bat, opencode, and other tools that support tmTheme format.
 
 ## Targets
 
-| Target | Format | Mapping Doc |
-|--------|--------|-------------|
-| Ghostty | Key-value config | `docs/terminal.md` |
-| bat | tmTheme (XML) | `docs/syntax.md` |
-| opencode | tmTheme (XML) | `docs/syntax.md` |
+| Target | Format | Mapping Doc | Status |
+|--------|--------|-------------|--------|
+| Ghostty | Key-value config | `docs/terminal.md` | done |
+| bat | tmTheme (XML) | `docs/syntax.md` | pending |
+| opencode | tmTheme (XML) | `docs/syntax.md` | pending |
 
 ## Artifacts
 
 | Path | Description | Status |
 |------|-------------|--------|
 | `themes/helix.toml` | Source theme (canonical) | done |
-| `themes/ghostty` | Ghostty terminal theme | pending |
+| `themes/ghostty` | Ghostty terminal theme | done |
 | `themes/pop-dark.tmTheme` | bat/opencode syntax theme | pending |
 
 ## Reference Implementations
@@ -62,8 +68,6 @@ The `vendor/converters/` directory contains 5 reference implementations for them
 
 ## Next Steps
 
-1. **Review semantic mappings** — Validate `docs/terminal.md` and `docs/syntax.md`
-2. **Create `themes/ghostty`** — Generate from `docs/terminal.md` mapping
-3. **Write `scripts/generate-tmtheme.ts`** — Convert helix.toml → tmTheme using `docs/syntax.md`
-4. **Generate `themes/pop-dark.tmTheme`** — Run generator
-5. **Validate** — Test in ghostty, bat, opencode
+1. **Write `scripts/generate-tmtheme.ts`** — Convert helix.toml → tmTheme using `docs/syntax.md`
+2. **Generate `themes/pop-dark.tmTheme`** — Run generator
+3. **Validate** — Test in bat, opencode
