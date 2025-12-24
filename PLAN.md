@@ -1,43 +1,82 @@
 # Goal
 Propagate my `pop-dark` theme across TUI contexts.
 
-## Lineage
-```
-VSCodePopTheme (upstream) → helix pop-dark (current) → ghostty, bat, opencode
-```
+## Source of Truth
+**Helix theme** (`themes/helix.toml`) is the canonical source.
 
-## Formats
-| TUI | Format | Notes |
-|-----|--------|-------|
-| VSCodePopTheme | VSCode JSON | upstream source; converters expect this |
-| helix | TOML | already done |
-| ghostty | TOML | ANSI-16 + UI; semantic mapping TBD (e.g. bright vs dark) |
-| bat | tmTheme (XML) | TextMate scopes |
-| opencode | tmTheme | uses tmTheme under the hood |
+The helix theme was originally derived from VSCodePopTheme but has diverged significantly (keyword/type color inversion, richer palette). We treat helix as authoritative, not VSCode.
 
-## Converters
-All consume VSCode JSON. Compare implementations before choosing.
+## Palette
+The helix theme defines 26 named colors:
 
-| Converter | Output | Notes |
-|-----------|--------|-------|
-| vscode_theme_converter | tmTheme + Ghostty + ANSI map | Python; most complete |
-| json2tm | tmTheme | Rust; minimal |
-| theme-converter | tmTheme | Rust; lib only |
-| code-theme-converter | tmTheme (or sublime-color-scheme) | Node; takes repo URL |
-| root-loops | 18 formats (VSCode, Helix, Ghostty, etc.) | Svelte; generator not converter |
+| Category | Colors |
+|----------|--------|
+| Browns (bg) | brownN, brownH, brownD, brownR, brownU, brownV |
+| Greys | greyT, greyC, greyL, greyH, greyG, greyD |
+| Oranges | orangeH, orangeL, orangeN, orangeY, orangeW, orangeS |
+| Blues | blueH, blueL, blueN, blueD |
+| Greens | greenN, greenS |
+| Reds | redH, redL, redE, redD |
+| Yellow | yellowH |
+| B/W | white, black |
 
-Note: `root-loops` is a **color scheme generator** with export capabilities, not a format converter. It generates palettes from parameters and exports to many formats. Useful as reference for export format implementations.
+See `themes/helix.toml` `[palette]` section for hex values.
 
-## Strategy
-1. Pull VSCodePopTheme as source artifact
-2. Review existing VSCode → helix mapping for quality/gaps
-3. Evaluate converters → produce tmTheme (bat, opencode) + Ghostty
-4. Ghostty may need manual tuning (bright/dark semantics)
+## Targets
+| TUI | Format | Strategy |
+|-----|--------|----------|
+| helix | TOML | done (source) |
+| ghostty | TOML | map 26 colors → ANSI-16 + UI colors |
+| bat | tmTheme (XML) | map helix scopes → TextMate scopes |
+| opencode | tmTheme | same as bat |
+
+## Mapping Approach
+
+### Ghostty (ANSI-16)
+Collapse 26 colors to 16 ANSI slots. Decisions needed:
+- Which oranges → yellow vs red?
+- Which blues → blue vs cyan?
+- Bright vs normal semantics
+
+### bat/opencode (tmTheme)
+Helix uses tree-sitter scopes similar to Sublime/TextMate. Direct mapping:
+- helix `comment` → tmTheme `comment`
+- helix `string` → tmTheme `string`
+- helix `keyword.control` → tmTheme `keyword.control`
+- etc.
+
+Full 26-color palette preserved (tmTheme supports arbitrary hex).
+
+## Converters (Reference Only)
+Evaluated but **not directly usable** — all expect VSCode JSON input, not helix TOML.
+
+Useful as **reference implementations** for output format structure:
+- `vscode_theme_converter` — tmTheme structure, ANSI mapping logic
+- `root-loops` — Ghostty/Helix export format examples
+- `code-theme-converter` — tmTheme field mappings
+
+See `docs/converters.md` for full analysis.
+
+## Artifacts
+| Path | Description |
+|------|-------------|
+| `themes/helix.toml` | source theme (canonical) |
+| `themes/vscode.json` | upstream reference (historical, not source of truth) |
+| `themes/ghostty.toml` | TBD |
+| `themes/bat.tmTheme` | TBD |
 
 ## Documents
-- `docs/converters.md` — converter comparison and selection
-- `docs/vscode.md` — VSCodePopTheme upstream source
-- `docs/tuis/helix.md` — helix theme review
-- `docs/tuis/ghostty.md` — ANSI mapping decisions
-- `docs/tuis/bat.md` — tmTheme generation
+- `docs/converters.md` — converter analysis (reference only)
+- `docs/vscode.md` — upstream VSCode theme (historical)
+- `docs/tuis/helix.md` — palette analysis, scope inventory, VSCode deviation notes
+- `docs/tuis/ghostty.md` — ANSI-16 mapping decisions
+- `docs/tuis/bat.md` — tmTheme scope mapping
 - `docs/tuis/opencode.md` — tmTheme integration
+
+## Next Steps
+1. [ ] Define ANSI-16 mapping from helix palette (update `docs/tuis/ghostty.md`)
+2. [ ] Create `themes/ghostty.toml`
+3. [ ] Map helix scopes → tmTheme scopes (update `docs/tuis/bat.md`)
+4. [ ] Create `themes/bat.tmTheme`
+5. [ ] Validate bat theme with actual syntax files
+6. [ ] Test opencode with bat.tmTheme
