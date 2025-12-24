@@ -29,82 +29,81 @@ interface OpenCodeTheme {
   theme: Record<string, string>;
 }
 
-// -----------------------------------------------------------------------------
-// Theme Mapping: opencode field -> helix source
-// -----------------------------------------------------------------------------
-
 interface ThemeMapping {
-  scope?: string; // helix scope to read from
-  prop?: "fg" | "bg"; // which property (default: fg)
-  fallback: string; // palette reference or hex value
+  scope: string;
+  prop: "fg" | "bg";
 }
 
-// opencode field -> { helix scope, property, fallback }
-const THEME_MAP: Record<string, ThemeMapping> = {
+// -----------------------------------------------------------------------------
+// Theme Mapping: opencode field -> helix source (or null for "none")
+// -----------------------------------------------------------------------------
+
+const THEME_MAP: Record<string, ThemeMapping | null> = {
   // UI Semantic (7)
-  primary: { scope: "ui.selection", prop: "bg", fallback: "blueH" },
-  secondary: { fallback: "redL" },
-  accent: { scope: "ui.cursor", prop: "bg", fallback: "orangeY" },
-  error: { scope: "error", prop: "fg", fallback: "redE" },
-  warning: { scope: "warning", prop: "fg", fallback: "orangeW" },
-  success: { fallback: "greenN" },
-  info: { scope: "info", prop: "fg", fallback: "brownD" },
+  primary: { scope: "ui.selection", prop: "bg" },
+  secondary: null,
+  accent: { scope: "ui.cursor", prop: "bg" },
+  error: { scope: "error", prop: "fg" },
+  warning: { scope: "warning", prop: "fg" },
+  success: null,
+  info: { scope: "info", prop: "fg" },
 
   // Text (3)
-  text: { scope: "ui.text", prop: "fg", fallback: "greyT" },
-  textMuted: { scope: "comment", prop: "fg", fallback: "greyC" },
-  selectedListItemText: { scope: "ui.background", prop: "bg", fallback: "brownN" },
+  text: { scope: "ui.text", prop: "fg" },
+  textMuted: { scope: "comment", prop: "fg" },
+  selectedListItemText: { scope: "ui.background", prop: "bg" },
 
-  // Background (3)
-  background: { scope: "ui.background", prop: "bg", fallback: "brownN" },
-  backgroundPanel: { scope: "ui.window", prop: "bg", fallback: "brownH" },
-  backgroundElement: { scope: "ui.cursorline", prop: "bg", fallback: "brownH" },
+  // Background (4)
+  background: { scope: "ui.background", prop: "bg" },
+  backgroundPanel: { scope: "ui.window", prop: "bg" },
+  backgroundElement: { scope: "ui.cursorline", prop: "bg" },
+  backgroundMenu: { scope: "ui.help", prop: "bg" },
 
   // Border (3)
-  border: { scope: "ui.window", prop: "fg", fallback: "brownD" },
-  borderActive: { scope: "ui.selection", prop: "bg", fallback: "blueH" },
-  borderSubtle: { scope: "ui.virtual", prop: "fg", fallback: "brownV" },
+  border: { scope: "ui.window", prop: "fg" },
+  borderActive: { scope: "ui.selection", prop: "bg" },
+  borderSubtle: { scope: "ui.virtual", prop: "fg" },
 
   // Diff (12)
-  diffAdded: { scope: "diff.plus", prop: "fg", fallback: "#4dd44d" },
-  diffRemoved: { scope: "diff.minus", prop: "fg", fallback: "#dd4d4d" },
-  diffContext: { scope: "diff.delta", prop: "fg", fallback: "#4d4ddd" },
-  diffHunkHeader: { scope: "diff.delta", prop: "fg", fallback: "#4d4ddd" },
-  diffHighlightAdded: { scope: "diff.plus", prop: "fg", fallback: "#4dd44d" },
-  diffHighlightRemoved: { scope: "diff.minus", prop: "fg", fallback: "#dd4d4d" },
-  diffAddedBg: { fallback: "brownH" },
-  diffRemovedBg: { fallback: "brownH" },
-  diffContextBg: { scope: "ui.background", prop: "bg", fallback: "brownN" },
-  diffLineNumber: { scope: "ui.linenr", prop: "fg", fallback: "greyL" },
-  diffAddedLineNumberBg: { fallback: "brownH" },
-  diffRemovedLineNumberBg: { fallback: "brownH" },
+  diffAdded: { scope: "diff.plus", prop: "fg" },
+  diffRemoved: { scope: "diff.minus", prop: "fg" },
+  diffContext: { scope: "diff.delta", prop: "fg" },
+  diffHunkHeader: { scope: "diff.delta", prop: "fg" },
+  diffHighlightAdded: { scope: "diff.plus", prop: "fg" },
+  diffHighlightRemoved: { scope: "diff.minus", prop: "fg" },
+  diffAddedBg: null,
+  diffRemovedBg: null,
+  diffContextBg: { scope: "ui.background", prop: "bg" },
+  diffLineNumber: { scope: "ui.linenr", prop: "fg" },
+  diffAddedLineNumberBg: null,
+  diffRemovedLineNumberBg: null,
 
   // Markdown (14)
-  markdownText: { scope: "ui.text", prop: "fg", fallback: "greyT" },
-  markdownHeading: { scope: "markup.heading", prop: "fg", fallback: "greenN" },
-  markdownLink: { scope: "markup.link", prop: "fg", fallback: "blueD" },
-  markdownLinkText: { scope: "markup.link.text", prop: "fg", fallback: "blueN" },
-  markdownCode: { scope: "markup.raw.inline", prop: "fg", fallback: "blueL" },
-  markdownBlockQuote: { scope: "markup.quote", prop: "fg", fallback: "blueL" },
-  markdownEmph: { fallback: "greyT" },
-  markdownStrong: { fallback: "greyT" },
-  markdownHorizontalRule: { scope: "ui.virtual", prop: "fg", fallback: "brownV" },
-  markdownListItem: { scope: "markup.list", prop: "fg", fallback: "greenN" },
-  markdownListEnumeration: { scope: "markup.list", prop: "fg", fallback: "greenN" },
-  markdownImage: { scope: "markup.link", prop: "fg", fallback: "blueD" },
-  markdownImageText: { scope: "markup.link.text", prop: "fg", fallback: "blueN" },
-  markdownCodeBlock: { scope: "markup.raw.block", prop: "fg", fallback: "orangeH" },
+  markdownText: { scope: "ui.text", prop: "fg" },
+  markdownHeading: { scope: "markup.heading", prop: "fg" },
+  markdownLink: { scope: "markup.link", prop: "fg" },
+  markdownLinkText: { scope: "markup.link.text", prop: "fg" },
+  markdownCode: { scope: "markup.raw.inline", prop: "fg" },
+  markdownBlockQuote: { scope: "markup.quote", prop: "fg" },
+  markdownEmph: null,
+  markdownStrong: null,
+  markdownHorizontalRule: { scope: "ui.virtual", prop: "fg" },
+  markdownListItem: { scope: "markup.list", prop: "fg" },
+  markdownListEnumeration: { scope: "markup.list", prop: "fg" },
+  markdownImage: { scope: "markup.link", prop: "fg" },
+  markdownImageText: { scope: "markup.link.text", prop: "fg" },
+  markdownCodeBlock: { scope: "markup.raw.block", prop: "fg" },
 
   // Syntax (9)
-  syntaxComment: { scope: "comment", prop: "fg", fallback: "greyC" },
-  syntaxKeyword: { scope: "keyword", prop: "fg", fallback: "blueH" },
-  syntaxFunction: { scope: "function", prop: "fg", fallback: "blueH" },
-  syntaxVariable: { scope: "variable", prop: "fg", fallback: "greyT" },
-  syntaxString: { scope: "string", prop: "fg", fallback: "greenN" },
-  syntaxNumber: { scope: "constant.numeric", prop: "fg", fallback: "redH" },
-  syntaxType: { scope: "type", prop: "fg", fallback: "redH" },
-  syntaxOperator: { scope: "operator", prop: "fg", fallback: "orangeY" },
-  syntaxPunctuation: { scope: "punctuation", prop: "fg", fallback: "blueL" },
+  syntaxComment: { scope: "comment", prop: "fg" },
+  syntaxKeyword: { scope: "keyword", prop: "fg" },
+  syntaxFunction: { scope: "function", prop: "fg" },
+  syntaxVariable: { scope: "variable", prop: "fg" },
+  syntaxString: { scope: "string", prop: "fg" },
+  syntaxNumber: { scope: "constant.numeric", prop: "fg" },
+  syntaxType: { scope: "type", prop: "fg" },
+  syntaxOperator: { scope: "operator", prop: "fg" },
+  syntaxPunctuation: { scope: "punctuation", prop: "fg" },
 };
 
 // -----------------------------------------------------------------------------
@@ -139,16 +138,11 @@ function getHelixValue(
   return value[prop];
 }
 
-function isHexColor(value: string): boolean {
-  return value.startsWith("#");
-}
-
 // -----------------------------------------------------------------------------
 // Theme Building
 // -----------------------------------------------------------------------------
 
 function buildDefs(palette: Record<string, string>): Record<string, string> {
-  // Copy palette as-is, sorted for stability
   const defs: Record<string, string> = {};
   const sortedKeys = Object.keys(palette).sort((a, b) => a.localeCompare(b));
 
@@ -165,34 +159,29 @@ function buildTheme(
 ): Record<string, string> {
   const theme: Record<string, string> = {};
 
-  // Sort fields for stable output
   const sortedFields = Object.keys(THEME_MAP).sort((a, b) =>
     a.localeCompare(b)
   );
 
   for (const field of sortedFields) {
-    const mapping = THEME_MAP[field]!;
-    let value: string | undefined;
+    const mapping = THEME_MAP[field] as ThemeMapping | null | undefined;
 
-    // Try to get value from helix theme
-    if (mapping.scope) {
-      value = getHelixValue(helixTheme, mapping.scope, mapping.prop ?? "fg");
+    if (mapping === null || mapping === undefined) {
+      theme[field] = "none";
+    } else {
+      const value = getHelixValue(helixTheme, mapping.scope, mapping.prop);
+      if (value) {
+        // Validate palette reference
+        if (!value.startsWith("#") && !palette[value]) {
+          console.warn(
+            `Warning: ${field} references unknown palette color: ${value}`
+          );
+        }
+        theme[field] = value;
+      } else {
+        theme[field] = "none";
+      }
     }
-
-    // Use fallback if no value found
-    if (!value) {
-      value = mapping.fallback;
-    }
-
-    // If value is a hex color, use it directly
-    // If value is a palette reference, verify it exists
-    if (!isHexColor(value) && !palette[value]) {
-      console.warn(
-        `Warning: ${field} references unknown palette color: ${value}`
-      );
-    }
-
-    theme[field] = value;
   }
 
   return theme;
@@ -220,7 +209,12 @@ async function main() {
 
   console.log("Building theme...");
   const theme = buildTheme(helixTheme, palette);
-  console.log(`Mapped ${Object.keys(theme).length} theme fields`);
+
+  const mappedCount = Object.values(theme).filter((v) => v !== "none").length;
+  const noneCount = Object.values(theme).filter((v) => v === "none").length;
+  console.log(
+    `Mapped ${mappedCount} theme fields, ${noneCount} set to "none"`
+  );
 
   const output: OpenCodeTheme = {
     $schema: "https://opencode.ai/theme.json",
