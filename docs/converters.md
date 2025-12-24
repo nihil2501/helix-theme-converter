@@ -10,6 +10,7 @@ Evaluate which converter is best suited for VSCode JSON → tmTheme (+ Ghostty).
 | json2tm | Rust | `vendor/converters/json2tm` |
 | theme-converter | Rust | `vendor/converters/theme-converter` |
 | code-theme-converter | Node | `vendor/converters/code-theme-converter` |
+| root-loops | Svelte/TS | `vendor/converters/root-loops` |
 
 ## Summary
 
@@ -19,8 +20,11 @@ Evaluate which converter is best suited for VSCode JSON → tmTheme (+ Ghostty).
 | json2tm | file (JSONC) | 6 colors | no | no | minimal | low |
 | theme-converter | file (JSON) | 2 colors | no | no | none (lib) | medium |
 | code-theme-converter | git URL only | 10 colors | no | no | fair | medium |
+| root-loops | params (generator) | N/A | yes | yes | web only | high |
 
 **Recommendation:** `vscode_theme_converter` — most complete mapping, ANSI support, Ghostty workflow (manual but documented).
+
+**Alternative:** `root-loops` export modules are excellent reference implementations for Ghostty/Helix/VSCode formats, even though it's a generator not a converter.
 
 ---
 
@@ -159,39 +163,41 @@ Evaluate which converter is best suited for VSCode JSON → tmTheme (+ Ghostty).
 
 ### 1. Input Handling
 
-| Criterion | vscode_theme_converter | json2tm | theme-converter | code-theme-converter |
-|-----------|------------------------|---------|-----------------|----------------------|
-| Local file | yes | yes | yes | **no (git URL only)** |
-| JSONC | yes | yes | no | yes |
-| tokenColors | yes | yes | yes | yes |
-| colors object | 14 fields | 6 fields | 2 fields | 10 fields |
-| include/inheritance | rejects | ignores | ignores | ignores |
+| Criterion | vscode_theme_converter | json2tm | theme-converter | code-theme-converter | root-loops |
+|-----------|------------------------|---------|-----------------|----------------------|------------|
+| Local file | yes | yes | yes | **no (git URL only)** | **no (generator)** |
+| JSONC | yes | yes | no | yes | N/A |
+| tokenColors | yes | yes | yes | yes | N/A |
+| colors object | 14 fields | 6 fields | 2 fields | 10 fields | N/A |
+| include/inheritance | rejects | ignores | ignores | ignores | N/A |
 
 ### 2. tmTheme Output Quality
 
-| Criterion | vscode_theme_converter | json2tm | theme-converter | code-theme-converter |
-|-----------|------------------------|---------|-----------------|----------------------|
-| Scope preservation | yes | yes | yes | yes |
-| Font styles | yes | yes | yes | yes |
-| Compound scopes | yes | yes | yes | yes |
-| Valid plist | yes | yes | yes | yes |
+| Criterion | vscode_theme_converter | json2tm | theme-converter | code-theme-converter | root-loops |
+|-----------|------------------------|---------|-----------------|----------------------|------------|
+| Scope preservation | yes | yes | yes | yes | N/A |
+| Font styles | yes | yes | yes | yes | N/A |
+| Compound scopes | yes | yes | yes | yes | N/A |
+| Valid plist | yes | yes | yes | yes | N/A |
 
 ### 3. Extras
 
-| Criterion | vscode_theme_converter | json2tm | theme-converter | code-theme-converter |
-|-----------|------------------------|---------|-----------------|----------------------|
-| Ghostty | manual workflow | no | no | no |
-| ANSI-16 mapping | yes | no | no | no |
-| CLI usability | good | minimal | none | fair |
+| Criterion | vscode_theme_converter | json2tm | theme-converter | code-theme-converter | root-loops |
+|-----------|------------------------|---------|-----------------|----------------------|------------|
+| Ghostty | manual workflow | no | no | no | yes (export) |
+| Helix | no | no | no | no | yes (export) |
+| VSCode | input format | no | no | no | yes (export) |
+| ANSI-16 mapping | yes | no | no | no | yes |
+| CLI usability | good | minimal | none | fair | web only |
 
 ### 4. Maintainability
 
-| Criterion | vscode_theme_converter | json2tm | theme-converter | code-theme-converter |
-|-----------|------------------------|---------|-----------------|----------------------|
-| Tests | no | no | no | yes (partial) |
-| Docs | good README | minimal | minimal | minimal |
-| Code quality | high | low | medium | medium |
-| Easy to patch | yes | yes | yes | yes |
+| Criterion | vscode_theme_converter | json2tm | theme-converter | code-theme-converter | root-loops |
+|-----------|------------------------|---------|-----------------|----------------------|------------|
+| Tests | no | no | no | yes (partial) | yes |
+| Docs | good README | minimal | minimal | minimal | moderate |
+| Code quality | high | low | medium | medium | high |
+| Easy to patch | yes | yes | yes | yes | yes |
 
 ---
 
@@ -206,3 +212,37 @@ Evaluate which converter is best suited for VSCode JSON → tmTheme (+ Ghostty).
 **Fallback:** Extract `toTmTheme()` logic from `code-theme-converter` if Node is preferred, but fix the bugs first.
 
 **Avoid:** `json2tm` and `theme-converter` map too few colors to be useful for a complete theme port.
+
+---
+
+## root-loops (Svelte/TypeScript)
+
+**Not a converter** — a web-based color scheme **generator** with export capabilities.
+
+**What it is:**
+- Interactive UI at https://rootloops.sh
+- Generates 16 ANSI colors + fg/bg from "recipe" parameters
+- Uses OkHSL color space for perceptually uniform colors
+
+**Export Formats (18 targets):**
+| Category | Formats |
+|----------|---------|
+| Terminals | Alacritty, Foot, Ghostty, iTerm2, Kitty, Tabby, Warp, WezTerm, Windows Terminal, Xresources |
+| Editors | VSCode (180+ UI colors), Helix (90+ tokens), vim, neovim |
+| CLI | fzf, Zellij |
+| General | JSON, Nix |
+
+**Useful for our task:**
+- **Ghostty exporter** (`src/lib/export/ghostty.ts`) — reference for format
+- **Helix exporter** (`src/lib/export/helix.ts`) — 90+ semantic tokens mapped
+- **VSCode exporter** (`src/lib/export/vscode.ts`) — 180+ UI colors + TextMate rules
+- **textmate.ts** — shared TextMate syntax scope definitions
+
+**Limitations:**
+- No CLI — web-only
+- Cannot import existing themes
+- Generates from parameters, not converts
+
+**Code Quality:** High — TypeScript, tested, modular exporters.
+
+**Value:** Reference implementation for export format structure, not a conversion tool.

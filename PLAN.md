@@ -24,6 +24,9 @@ All consume VSCode JSON. Compare implementations before choosing.
 | json2tm | tmTheme | Rust; minimal |
 | theme-converter | tmTheme | Rust; lib only |
 | code-theme-converter | tmTheme (or sublime-color-scheme) | Node; takes repo URL |
+| root-loops | 18 formats (VSCode, Helix, Ghostty, etc.) | Svelte; generator not converter |
+
+Note: `root-loops` is a **color scheme generator** with export capabilities, not a format converter. It generates palettes from parameters and exports to many formats. Useful as reference for export format implementations.
 
 ## Strategy
 1. Pull VSCodePopTheme as source artifact
