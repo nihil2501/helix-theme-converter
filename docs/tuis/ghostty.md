@@ -1,6 +1,6 @@
 # Ghostty Theme
 
-Target: `themes/ghostty.toml`
+Target: `themes/ghostty`
 
 ## Format
 
@@ -69,7 +69,7 @@ The helix pop-dark palette has no purple/magenta. Options considered:
 
 These helix colors don't map to ANSI-16 but are available for future use:
 - orangeH (#FFD68A) — member variables
-- orangeW (#FF9500) — warnings, special strings  
+- orangeW (#FF9500) — warnings, special strings
 - orangeY (#FDC33B) — operators (used for cursor)
 - orangeS (#F79A6C) — unused in helix theme
 - redD (#CC3333) — unused
@@ -114,5 +114,5 @@ palette = 15=#FFFFFF
 - [x] Define UI color mapping from helix
 - [x] Define ANSI-16 collapse strategy
 - [x] Draft theme content
-- [ ] Create `themes/ghostty.toml`
+- [ ] Create `themes/ghostty`
 - [ ] Validate in ghostty
