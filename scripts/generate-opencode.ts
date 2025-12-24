@@ -6,22 +6,7 @@
  * Usage: bun run scripts/generate-opencode.ts
  */
 
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
-
-interface HelixStyle {
-  fg?: string;
-  bg?: string;
-  modifiers?: string[];
-}
-
-type HelixValue = string | HelixStyle;
-
-interface HelixTheme {
-  palette: Record<string, string>;
-  [scope: string]: HelixValue | Record<string, string>;
-}
+import { type HelixTheme, parseHelixTheme } from "./lib/helix";
 
 interface OpenCodeTheme {
   $schema: string;
@@ -105,14 +90,6 @@ const THEME_MAP: Record<string, ThemeMapping | null> = {
   syntaxOperator: { scope: "operator", prop: "fg" },
   syntaxPunctuation: { scope: "punctuation", prop: "fg" },
 };
-
-// -----------------------------------------------------------------------------
-// Parsing
-// -----------------------------------------------------------------------------
-
-function parseHelixTheme(tomlContent: string): HelixTheme {
-  return Bun.TOML.parse(tomlContent) as HelixTheme;
-}
 
 // -----------------------------------------------------------------------------
 // Value Extraction

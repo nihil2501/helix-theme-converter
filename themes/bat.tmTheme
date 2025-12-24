@@ -19,14 +19,6 @@
 				<string>#3E3B39</string>
 				<key>foreground</key>
 				<string>#DEDEDE</string>
-				<key>caret</key>
-				<string>#FDC33B</string>
-				<key>selection</key>
-				<string>#8DEEF9</string>
-				<key>lineHighlight</key>
-				<string>#4B4845</string>
-				<key>gutterForeground</key>
-				<string>#9A9A9A</string>
 			</dict>
 		</dict>
 		<dict>

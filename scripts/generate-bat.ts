@@ -6,23 +6,7 @@
  * Usage: bun run scripts/generate-bat.ts
  */
 
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
-
-interface HelixStyle {
-  fg?: string;
-  bg?: string;
-  modifiers?: string[];
-  underline?: { color?: string; style?: string };
-}
-
-type HelixValue = string | HelixStyle;
-
-interface HelixTheme {
-  palette: Record<string, string>;
-  [scope: string]: HelixValue | Record<string, string>;
-}
+import { type HelixTheme, type HelixValue, parseHelixTheme } from "./lib/helix";
 
 interface TokenRule {
   name: string;
@@ -35,10 +19,6 @@ interface TokenRule {
 interface GlobalSettings {
   background?: string;
   foreground?: string;
-  caret?: string;
-  selection?: string;
-  lineHighlight?: string;
-  gutterForeground?: string;
 }
 
 // -----------------------------------------------------------------------------
@@ -147,14 +127,6 @@ const MODIFIER_MAP: Record<string, string> = {
 };
 
 // -----------------------------------------------------------------------------
-// Parsing
-// -----------------------------------------------------------------------------
-
-function parseHelixTheme(tomlContent: string): HelixTheme {
-  return Bun.TOML.parse(tomlContent) as HelixTheme;
-}
-
-// -----------------------------------------------------------------------------
 // Color Resolution
 // -----------------------------------------------------------------------------
 
@@ -225,40 +197,18 @@ function extractGlobalSettings(
 ): GlobalSettings {
   const settings: GlobalSettings = {};
 
-  // ui.background -> background (use bg)
-  const uiBg = theme["ui.background"] as HelixStyle | undefined;
-  if (uiBg?.bg) {
-    settings.background = resolveColor(uiBg.bg, palette);
+  // ui.background -> background
+  const uiBg = theme["ui.background"];
+  if (uiBg) {
+    const style = extractStyle(uiBg, palette);
+    if (style.bg) settings.background = style.bg;
   }
 
-  // ui.text -> foreground (use fg)
-  const uiText = theme["ui.text"] as HelixStyle | undefined;
-  if (uiText?.fg) {
-    settings.foreground = resolveColor(uiText.fg, palette);
-  }
-
-  // ui.cursor -> caret (use bg)
-  const uiCursor = theme["ui.cursor"] as HelixStyle | undefined;
-  if (uiCursor?.bg) {
-    settings.caret = resolveColor(uiCursor.bg, palette);
-  }
-
-  // ui.selection -> selection (use bg)
-  const uiSelection = theme["ui.selection"] as HelixStyle | undefined;
-  if (uiSelection?.bg) {
-    settings.selection = resolveColor(uiSelection.bg, palette);
-  }
-
-  // ui.cursorline -> lineHighlight (use bg)
-  const uiCursorline = theme["ui.cursorline"] as HelixStyle | undefined;
-  if (uiCursorline?.bg) {
-    settings.lineHighlight = resolveColor(uiCursorline.bg, palette);
-  }
-
-  // ui.linenr -> gutterForeground (use fg)
-  const uiLinenr = theme["ui.linenr"] as HelixStyle | undefined;
-  if (uiLinenr?.fg) {
-    settings.gutterForeground = resolveColor(uiLinenr.fg, palette);
+  // ui.text -> foreground
+  const uiText = theme["ui.text"];
+  if (uiText) {
+    const style = extractStyle(uiText, palette);
+    if (style.fg) settings.foreground = style.fg;
   }
 
   return settings;
@@ -353,22 +303,6 @@ function generateTmTheme(
   if (globalSettings.foreground) {
     lines.push("\t\t\t\t<key>foreground</key>");
     lines.push(`\t\t\t\t<string>${globalSettings.foreground}</string>`);
-  }
-  if (globalSettings.caret) {
-    lines.push("\t\t\t\t<key>caret</key>");
-    lines.push(`\t\t\t\t<string>${globalSettings.caret}</string>`);
-  }
-  if (globalSettings.selection) {
-    lines.push("\t\t\t\t<key>selection</key>");
-    lines.push(`\t\t\t\t<string>${globalSettings.selection}</string>`);
-  }
-  if (globalSettings.lineHighlight) {
-    lines.push("\t\t\t\t<key>lineHighlight</key>");
-    lines.push(`\t\t\t\t<string>${globalSettings.lineHighlight}</string>`);
-  }
-  if (globalSettings.gutterForeground) {
-    lines.push("\t\t\t\t<key>gutterForeground</key>");
-    lines.push(`\t\t\t\t<string>${globalSettings.gutterForeground}</string>`);
   }
 
   lines.push("\t\t\t</dict>");
