@@ -5,9 +5,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "generate": "bun run bin/generate.ts"
+    "generate": "bun run bin/generate.ts",
+    "check": "biome check src bin *.json",
+    "fix": "biome check --write src bin *.json"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.10",
     "@types/bun": "latest",
     "@types/plist": "^3.0.5"
   },
