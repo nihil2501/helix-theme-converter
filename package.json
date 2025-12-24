@@ -1,0 +1,17 @@
+{
+  "name": "pop-dark",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "private": true,
+  "scripts": {
+    "generate:bat": "bun run scripts/generate-bat.ts",
+    "generate:opencode": "bun run scripts/generate-opencode.ts",
+    "generate": "bun run generate:bat && bun run generate:opencode"
+  },
+  "type": "module"
+}
