@@ -27,7 +27,11 @@ const THEME_MAP = [
     helix: "comment.line",
     name: "Line Comments",
   },
-
+  {
+    tmTheme: "comment.line.documentation",
+    helix: "comment.line.documentation",
+    name: "Line Documentation Comments",
+  },
   {
     tmTheme: "constant",
     helix: "constant",
@@ -54,11 +58,10 @@ const THEME_MAP = [
     name: "Numbers",
   },
   {
-    tmTheme: "constant.other.symbol",
-    helix: "string.special.symbol",
-    name: "Symbols",
+    tmTheme: "constant.other",
+    helix: "string.special",
+    name: "Language-Specific Constants",
   },
-
   {
     tmTheme: "entity.name.function",
     helix: "function",
@@ -85,11 +88,6 @@ const THEME_MAP = [
     name: "Labels",
   },
   {
-    tmTheme: "entity.name.module",
-    helix: "module",
-    name: "Modules",
-  },
-  {
     tmTheme: "entity.name.namespace",
     helix: "namespace",
     name: "Namespaces",
@@ -105,7 +103,7 @@ const THEME_MAP = [
     name: "Types",
   },
   {
-    tmTheme: "entity.name.type.enum",
+    tmTheme: "entity.name.enum",
     helix: "type.enum.variant",
     name: "Enum Variants",
   },
@@ -114,7 +112,6 @@ const THEME_MAP = [
     helix: "attribute",
     name: "Attributes",
   },
-
   {
     tmTheme: "keyword",
     helix: "keyword",
@@ -124,6 +121,11 @@ const THEME_MAP = [
     tmTheme: "keyword.control",
     helix: "keyword.control",
     name: "Control Keywords",
+  },
+  {
+    tmTheme: "keyword.control.conditional",
+    helix: "keyword.control.conditional",
+    name: "Conditional Keywords",
   },
   {
     tmTheme: "keyword.control.exception",
@@ -141,7 +143,7 @@ const THEME_MAP = [
     name: "Loop Keywords",
   },
   {
-    tmTheme: "keyword.control.return",
+    tmTheme: "keyword.control.flow.return",
     helix: "keyword.control.return",
     name: "Return Keywords",
   },
@@ -155,12 +157,6 @@ const THEME_MAP = [
     helix: "special",
     name: "Special Keywords",
   },
-  {
-    tmTheme: "keyword.other.directive",
-    helix: "keyword.directive",
-    name: "Directives",
-  },
-
   {
     tmTheme: "markup.bold",
     helix: "markup.bold",
@@ -182,36 +178,6 @@ const THEME_MAP = [
     name: "Headings",
   },
   {
-    tmTheme: "markup.heading.1",
-    helix: "markup.heading.1",
-    name: "Heading 1",
-  },
-  {
-    tmTheme: "markup.heading.2",
-    helix: "markup.heading.2",
-    name: "Heading 2",
-  },
-  {
-    tmTheme: "markup.heading.3",
-    helix: "markup.heading.3",
-    name: "Heading 3",
-  },
-  {
-    tmTheme: "markup.heading.4",
-    helix: "markup.heading.4",
-    name: "Heading 4",
-  },
-  {
-    tmTheme: "markup.heading.5",
-    helix: "markup.heading.5",
-    name: "Heading 5",
-  },
-  {
-    tmTheme: "markup.heading.6",
-    helix: "markup.heading.6",
-    name: "Heading 6",
-  },
-  {
     tmTheme: "markup.inserted",
     helix: "diff.plus",
     name: "Inserted (Diff)",
@@ -222,14 +188,9 @@ const THEME_MAP = [
     name: "Italic",
   },
   {
-    tmTheme: "markup.link",
+    tmTheme: "markup.underline.link",
     helix: "markup.link",
     name: "Links",
-  },
-  {
-    tmTheme: "markup.link.url",
-    helix: "markup.link.url",
-    name: "Link URLs",
   },
   {
     tmTheme: "markup.list",
@@ -271,7 +232,6 @@ const THEME_MAP = [
     helix: "markup.strikethrough",
     name: "Strikethrough",
   },
-
   {
     tmTheme: "operator",
     helix: "operator",
@@ -283,7 +243,7 @@ const THEME_MAP = [
     name: "Punctuation",
   },
   {
-    tmTheme: "punctuation.bracket",
+    tmTheme: "punctuation.section.bracket",
     helix: "punctuation.bracket",
     name: "Brackets",
   },
@@ -292,13 +252,31 @@ const THEME_MAP = [
     helix: "punctuation.delimiter",
     name: "Separators",
   },
-
+  {
+    tmTheme: "storage.type",
+    helix: "keyword.storage.type",
+    name: "Type Keywords",
+  },
+  {
+    tmTheme: "keyword.declaration.type",
+    helix: "keyword.storage.type",
+    name: "Type Keywords",
+  },
+  {
+    tmTheme: "storage.modifier",
+    helix: "keyword.storage.modifier",
+    name: "Modifier Keywords",
+  },
+  {
+    tmTheme: "keyword.declaration.function",
+    helix: "keyword.function",
+    name: "Function Keywords",
+  },
   {
     tmTheme: "storage.type.function",
     helix: "keyword.function",
     name: "Function Keywords",
   },
-
   {
     tmTheme: "string",
     helix: "string",
@@ -310,16 +288,10 @@ const THEME_MAP = [
     name: "Special Strings",
   },
   {
-    tmTheme: "string.other.link",
-    helix: "string.special.url",
-    name: "URLs",
-  },
-  {
     tmTheme: "string.regexp",
     helix: "string.regexp",
     name: "Regular Expressions",
   },
-
   {
     tmTheme: "support.function",
     helix: "function.builtin",
@@ -330,7 +302,6 @@ const THEME_MAP = [
     helix: "type.builtin",
     name: "Built-in Types",
   },
-
   {
     tmTheme: "variable",
     helix: "variable",
@@ -338,7 +309,7 @@ const THEME_MAP = [
   },
   {
     tmTheme: "variable.function",
-    helix: "variable.function",
+    helix: "function",
     name: "Function References",
   },
   {
@@ -423,10 +394,11 @@ export function generate(
   };
 
   const rules = THEME_MAP.map(({ tmTheme: scope, helix, name }) => {
+    const settings = extractStyle(scopes, helix, palette);
     return {
       name,
       scope,
-      settings: extractStyle(scopes, helix, palette),
+      settings,
     };
   });
 
