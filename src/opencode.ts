@@ -1,365 +1,181 @@
-import {
-  BG,
-  FG,
-  type HelixProp,
-  type HelixTheme,
-  type HelixValue,
-  normalizeHelixValue,
-} from "./helix";
+import { type HelixTheme, type HelixValue, normalizeHelixValue } from "./helix";
 
 type ThemeMapping = {
   opencode: string;
-  helix?: {
-    scope: string;
-    prop: HelixProp;
-  };
+  helix?: string;
 };
 
 const THEME_MAP: ThemeMapping[] = [
   {
-    opencode: "accent",
-    helix: {
-      scope: "ui.cursor",
-      prop: BG,
-    },
+    opencode: "syntaxComment",
+    helix: "comment",
   },
   {
-    opencode: "error",
-    helix: {
-      scope: "error",
-      prop: FG,
-    },
+    opencode: "syntaxFunction",
+    helix: "function",
   },
   {
-    opencode: "info",
-    helix: {
-      scope: "info",
-      prop: FG,
-    },
+    opencode: "syntaxKeyword",
+    helix: "keyword",
+  },
+  {
+    opencode: "syntaxNumber",
+    helix: "constant.numeric",
+  },
+  {
+    opencode: "syntaxOperator",
+    helix: "operator",
+  },
+  {
+    opencode: "syntaxPunctuation",
+    helix: "punctuation",
+  },
+  {
+    opencode: "syntaxString",
+    helix: "string",
+  },
+  {
+    opencode: "syntaxType",
+    helix: "type",
+  },
+  {
+    opencode: "syntaxVariable",
+    helix: "variable",
   },
   {
     opencode: "primary",
-    helix: {
-      scope: "ui.selection",
-      prop: BG,
-    },
   },
   {
     opencode: "secondary",
   },
   {
-    opencode: "success",
+    opencode: "accent",
+  },
+  {
+    opencode: "error",
   },
   {
     opencode: "warning",
-    helix: {
-      scope: "warning",
-      prop: FG,
-    },
   },
-
   {
-    opencode: "selectedListItemText",
-    helix: {
-      scope: "ui.background",
-      prop: BG,
-    },
+    opencode: "success",
+  },
+  {
+    opencode: "info",
   },
   {
     opencode: "text",
-    helix: {
-      scope: "ui.text",
-      prop: FG,
-    },
   },
   {
     opencode: "textMuted",
-    helix: {
-      scope: "comment",
-      prop: FG,
-    },
   },
-
+  {
+    opencode: "selectedListItemText",
+  },
   {
     opencode: "background",
-    helix: {
-      scope: "ui.background",
-      prop: BG,
-    },
-  },
-  {
-    opencode: "backgroundElement",
-    helix: {
-      scope: "ui.cursorline",
-      prop: BG,
-    },
-  },
-  {
-    opencode: "backgroundMenu",
-    helix: {
-      scope: "ui.help",
-      prop: BG,
-    },
   },
   {
     opencode: "backgroundPanel",
-    helix: {
-      scope: "ui.window",
-      prop: BG,
-    },
   },
-
+  {
+    opencode: "backgroundElement",
+  },
+  {
+    opencode: "backgroundMenu",
+  },
   {
     opencode: "border",
-    helix: {
-      scope: "ui.window",
-      prop: FG,
-    },
   },
   {
     opencode: "borderActive",
-    helix: {
-      scope: "ui.selection",
-      prop: BG,
-    },
   },
   {
     opencode: "borderSubtle",
-    helix: {
-      scope: "ui.virtual",
-      prop: FG,
-    },
   },
-
   {
     opencode: "diffAdded",
-    helix: {
-      scope: "diff.plus",
-      prop: FG,
-    },
+  },
+  {
+    opencode: "diffRemoved",
+  },
+  {
+    opencode: "diffContext",
+  },
+  {
+    opencode: "diffHunkHeader",
+  },
+  {
+    opencode: "diffHighlightAdded",
+  },
+  {
+    opencode: "diffHighlightRemoved",
   },
   {
     opencode: "diffAddedBg",
   },
   {
-    opencode: "diffAddedLineNumberBg",
-  },
-  {
-    opencode: "diffContext",
-    helix: {
-      scope: "diff.delta",
-      prop: FG,
-    },
+    opencode: "diffRemovedBg",
   },
   {
     opencode: "diffContextBg",
-    helix: {
-      scope: "ui.background",
-      prop: BG,
-    },
-  },
-  {
-    opencode: "diffHighlightAdded",
-    helix: {
-      scope: "diff.plus",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "diffHighlightRemoved",
-    helix: {
-      scope: "diff.minus",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "diffHunkHeader",
-    helix: {
-      scope: "diff.delta",
-      prop: FG,
-    },
   },
   {
     opencode: "diffLineNumber",
-    helix: {
-      scope: "ui.linenr",
-      prop: FG,
-    },
   },
   {
-    opencode: "diffRemoved",
-    helix: {
-      scope: "diff.minus",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "diffRemovedBg",
+    opencode: "diffAddedLineNumberBg",
   },
   {
     opencode: "diffRemovedLineNumberBg",
   },
-
   {
-    opencode: "markdownBlockQuote",
-    helix: {
-      scope: "markup.quote",
-      prop: FG,
-    },
+    opencode: "markdownText",
+  },
+  {
+    opencode: "markdownHeading",
+  },
+  {
+    opencode: "markdownLink",
+  },
+  {
+    opencode: "markdownLinkText",
   },
   {
     opencode: "markdownCode",
-    helix: {
-      scope: "markup.raw.inline",
-      prop: FG,
-    },
   },
   {
-    opencode: "markdownCodeBlock",
-    helix: {
-      scope: "markup.raw.block",
-      prop: FG,
-    },
+    opencode: "markdownBlockQuote",
   },
   {
     opencode: "markdownEmph",
   },
   {
-    opencode: "markdownHeading",
-    helix: {
-      scope: "markup.heading",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "markdownHorizontalRule",
-    helix: {
-      scope: "ui.virtual",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "markdownImage",
-    helix: {
-      scope: "markup.link",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "markdownImageText",
-    helix: {
-      scope: "markup.link.text",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "markdownLink",
-    helix: {
-      scope: "markup.link",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "markdownLinkText",
-    helix: {
-      scope: "markup.link.text",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "markdownListEnumeration",
-    helix: {
-      scope: "markup.list",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "markdownListItem",
-    helix: {
-      scope: "markup.list",
-      prop: FG,
-    },
-  },
-  {
     opencode: "markdownStrong",
   },
   {
-    opencode: "markdownText",
-    helix: {
-      scope: "ui.text",
-      prop: FG,
-    },
-  },
-
-  {
-    opencode: "syntaxComment",
-    helix: {
-      scope: "comment",
-      prop: FG,
-    },
+    opencode: "markdownHorizontalRule",
   },
   {
-    opencode: "syntaxFunction",
-    helix: {
-      scope: "function",
-      prop: FG,
-    },
+    opencode: "markdownListItem",
   },
   {
-    opencode: "syntaxKeyword",
-    helix: {
-      scope: "keyword",
-      prop: FG,
-    },
+    opencode: "markdownListEnumeration",
   },
   {
-    opencode: "syntaxNumber",
-    helix: {
-      scope: "constant.numeric",
-      prop: FG,
-    },
+    opencode: "markdownImage",
   },
   {
-    opencode: "syntaxOperator",
-    helix: {
-      scope: "operator",
-      prop: FG,
-    },
+    opencode: "markdownImageText",
   },
   {
-    opencode: "syntaxPunctuation",
-    helix: {
-      scope: "punctuation",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "syntaxString",
-    helix: {
-      scope: "string",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "syntaxType",
-    helix: {
-      scope: "type",
-      prop: FG,
-    },
-  },
-  {
-    opencode: "syntaxVariable",
-    helix: {
-      scope: "variable",
-      prop: FG,
-    },
+    opencode: "markdownCodeBlock",
   },
 ]
   .sort(
     (a, b) =>
       a.opencode.localeCompare(b.opencode) ||
-      (a.helix?.scope ?? "").localeCompare(b.helix?.scope ?? "") ||
-      (a.helix?.prop ?? "").localeCompare(b.helix?.prop ?? ""),
+      (a.helix ?? "").localeCompare(b.helix ?? ""),
   )
   .filter(
     (item, index, arr) =>
@@ -370,13 +186,10 @@ const NONE = "none" as const;
 
 function resolveColor(
   scopes: Record<string, HelixValue>,
-  helix?: {
-    scope: string;
-    prop: HelixProp;
-  },
+  scope?: string,
 ): string {
-  if (!helix) return NONE;
-  return normalizeHelixValue(scopes[helix.scope])[helix.prop] || NONE;
+  if (!scope) return NONE;
+  return normalizeHelixValue(scopes[scope]).fg || NONE;
 }
 
 export function generate({ scopes, palette }: HelixTheme): string {
@@ -385,9 +198,9 @@ export function generate({ scopes, palette }: HelixTheme): string {
   );
 
   const theme = Object.fromEntries(
-    THEME_MAP.map(({ opencode, helix }) => [
+    THEME_MAP.map(({ opencode, helix: scope }) => [
       opencode,
-      resolveColor(scopes, helix),
+      resolveColor(scopes, scope),
     ]),
   );
 

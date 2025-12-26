@@ -1,10 +1,4 @@
-import {
-  BG,
-  FG,
-  type HelixTheme,
-  type HelixValue,
-  normalizeHelixValue,
-} from "./helix";
+import { type HelixTheme, type HelixValue, normalizeHelixValue } from "./helix";
 
 const THEME_MAP = [
   {
@@ -75,12 +69,12 @@ const THEME_MAP = [
   {
     tmTheme: "entity.name.class",
     helix: "constructor",
-    name: "Functions",
+    name: "Classes",
   },
   {
     tmTheme: "entity.other.inherited-class",
     helix: "constructor",
-    name: "Functions",
+    name: "Superclasses",
   },
   {
     tmTheme: "entity.name.function",
@@ -353,6 +347,11 @@ const THEME_MAP = [
     name: "Classes",
   },
   {
+    tmTheme: "entity.name",
+    helix: "variable",
+    name: "Variables",
+  },
+  {
     tmTheme: "variable",
     helix: "variable",
     name: "Variables",
@@ -434,8 +433,8 @@ function extractStyle(
     .filter(Boolean)
     .join(" ");
   return compact({
-    foreground: resolveColor(value[FG], palette),
-    background: resolveColor(value[BG], palette),
+    foreground: resolveColor(value.fg, palette),
+    background: resolveColor(value.bg, palette),
     fontStyle,
   });
 }
@@ -451,9 +450,12 @@ export function generate(
       background: extractStyle(scopes, "ui.background", palette).background,
       foreground: extractStyle(scopes, "ui.text", palette).foreground,
       caret: extractStyle(scopes, "ui.cursor.primary", palette).background,
-      selection: extractStyle(scopes, "ui.selection.primary", palette).background,
-      lineHighlight: extractStyle(scopes, "ui.cursorline.primary", palette).background,
-      invisibles: extractStyle(scopes, "ui.virtual.whitespace", palette).foreground,
+      selection: extractStyle(scopes, "ui.selection.primary", palette)
+        .background,
+      lineHighlight: extractStyle(scopes, "ui.cursorline.primary", palette)
+        .background,
+      invisibles: extractStyle(scopes, "ui.virtual.whitespace", palette)
+        .foreground,
       gutterForeground: extractStyle(scopes, "ui.linenr", palette).foreground,
       gutter: extractStyle(scopes, "ui.gutter", palette).background,
     }),

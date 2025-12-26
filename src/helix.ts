@@ -1,11 +1,6 @@
-export const FG = "fg" as const;
-export const BG = "bg" as const;
-
-export type HelixProp = typeof FG | typeof BG;
-
-type HelixColors = { [K in HelixProp]?: string };
-
-type HelixStyle = HelixColors & {
+type HelixStyle = {
+  fg?: string;
+  bg?: string;
   modifiers?: string[];
   underline?: {
     color?: string;
@@ -23,7 +18,7 @@ export interface HelixTheme {
 export function normalizeHelixValue(value: HelixValue | undefined): HelixStyle {
   if (typeof value === "string")
     return {
-      [FG]: value,
+      fg: value,
     };
   return value || {};
 }

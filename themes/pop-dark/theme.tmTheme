@@ -164,7 +164,18 @@
       </dict>
       <dict>
         <key>name</key>
-        <string>Functions</string>
+        <string>Variables</string>
+        <key>scope</key>
+        <string>entity.name</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>#DEDEDE</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Classes</string>
         <key>scope</key>
         <string>entity.name.class</string>
         <key>settings</key>
@@ -285,7 +296,7 @@
       </dict>
       <dict>
         <key>name</key>
-        <string>Functions</string>
+        <string>Superclasses</string>
         <key>scope</key>
         <string>entity.other.inherited-class</string>
         <key>settings</key>
