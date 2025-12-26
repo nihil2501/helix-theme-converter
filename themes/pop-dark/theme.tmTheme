@@ -75,6 +75,19 @@
       </dict>
       <dict>
         <key>name</key>
+        <string>Line Documentation Comments</string>
+        <key>scope</key>
+        <string>comment.line.documentation</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>#A0B4A7</string>
+          <key>fontStyle</key>
+          <string>italic</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
         <string>Constants</string>
         <key>scope</key>
         <string>constant</string>
@@ -130,13 +143,24 @@
       </dict>
       <dict>
         <key>name</key>
-        <string>Symbols</string>
+        <string>Language-Specific Constants</string>
         <key>scope</key>
-        <string>constant.other.symbol</string>
+        <string>constant.other</string>
         <key>settings</key>
         <dict>
           <key>foreground</key>
           <string>#FF9500</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Enum Variants</string>
+        <key>scope</key>
+        <string>entity.name.enum</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>#FFCB6B</string>
         </dict>
       </dict>
       <dict>
@@ -196,17 +220,6 @@
       </dict>
       <dict>
         <key>name</key>
-        <string>Modules</string>
-        <key>scope</key>
-        <string>entity.name.module</string>
-        <key>settings</key>
-        <dict>
-          <key>background</key>
-          <string>#FFCB6B</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
         <string>Namespaces</string>
         <key>scope</key>
         <string>entity.name.namespace</string>
@@ -236,17 +249,6 @@
         <dict>
           <key>foreground</key>
           <string>#F78C6C</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Enum Variants</string>
-        <key>scope</key>
-        <string>entity.name.type.enum</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#FFCB6B</string>
         </dict>
       </dict>
       <dict>
@@ -284,6 +286,17 @@
       </dict>
       <dict>
         <key>name</key>
+        <string>Conditional Keywords</string>
+        <key>scope</key>
+        <string>keyword.control.conditional</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>#6DD2FA</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
         <string>Exception Keywords</string>
         <key>scope</key>
         <string>keyword.control.exception</string>
@@ -291,6 +304,17 @@
         <dict>
           <key>foreground</key>
           <string>#F78C6C</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Return Keywords</string>
+        <key>scope</key>
+        <string>keyword.control.flow.return</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>#6DD2FA</string>
         </dict>
       </dict>
       <dict>
@@ -317,14 +341,22 @@
       </dict>
       <dict>
         <key>name</key>
-        <string>Return Keywords</string>
+        <string>Function Keywords</string>
         <key>scope</key>
-        <string>keyword.control.return</string>
+        <string>keyword.declaration.function</string>
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#6DD2FA</string>
+          <string>#F78C6C</string>
         </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Type Keywords</string>
+        <key>scope</key>
+        <string>keyword.declaration.type</string>
+        <key>settings</key>
+        <dict/>
       </dict>
       <dict>
         <key>name</key>
@@ -346,17 +378,6 @@
         <dict>
           <key>foreground</key>
           <string>#FF9500</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Directives</string>
-        <key>scope</key>
-        <string>keyword.other.directive</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#6DD2FA</string>
         </dict>
       </dict>
       <dict>
@@ -405,72 +426,6 @@
       </dict>
       <dict>
         <key>name</key>
-        <string>Heading 1</string>
-        <key>scope</key>
-        <string>markup.heading.1</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#FFC977</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Heading 2</string>
-        <key>scope</key>
-        <string>markup.heading.2</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#FFC26C</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Heading 3</string>
-        <key>scope</key>
-        <string>markup.heading.3</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#FFC166</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Heading 4</string>
-        <key>scope</key>
-        <string>markup.heading.4</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#FFB950</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Heading 5</string>
-        <key>scope</key>
-        <string>markup.heading.5</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#FFB340</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Heading 6</string>
-        <key>scope</key>
-        <string>markup.heading.6</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#FFAD34</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
         <string>Inserted (Diff)</string>
         <key>scope</key>
         <string>markup.inserted</string>
@@ -489,28 +444,6 @@
         <dict>
           <key>fontStyle</key>
           <string>italic</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Links</string>
-        <key>scope</key>
-        <string>markup.link</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#4AAAD6</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Link URLs</string>
-        <key>scope</key>
-        <string>markup.link.url</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#6DD2FA</string>
         </dict>
       </dict>
       <dict>
@@ -605,6 +538,17 @@
       </dict>
       <dict>
         <key>name</key>
+        <string>Links</string>
+        <key>scope</key>
+        <string>markup.underline.link</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>#4AAAD6</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
         <string>Operators</string>
         <key>scope</key>
         <string>operator</string>
@@ -629,7 +573,7 @@
         <key>name</key>
         <string>Brackets</string>
         <key>scope</key>
-        <string>punctuation.bracket</string>
+        <string>punctuation.section.bracket</string>
         <key>settings</key>
         <dict>
           <key>foreground</key>
@@ -646,6 +590,22 @@
           <key>foreground</key>
           <string>#8DEEF9</string>
         </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Modifier Keywords</string>
+        <key>scope</key>
+        <string>storage.modifier</string>
+        <key>settings</key>
+        <dict/>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Type Keywords</string>
+        <key>scope</key>
+        <string>storage.type</string>
+        <key>settings</key>
+        <dict/>
       </dict>
       <dict>
         <key>name</key>
@@ -674,17 +634,6 @@
         <string>Special Strings</string>
         <key>scope</key>
         <string>string.other</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#FF9500</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>URLs</string>
-        <key>scope</key>
-        <string>string.other.link</string>
         <key>settings</key>
         <dict>
           <key>foreground</key>
@@ -743,7 +692,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#6DD2FA</string>
+          <string>#8DEEF9</string>
         </dict>
       </dict>
       <dict>
